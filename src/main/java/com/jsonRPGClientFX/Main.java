@@ -1,16 +1,16 @@
 package com.jsonRPGClientFX;
 
+import com.jsonRPGClientFX.entities.DecorationEntity;
+import com.jsonRPGClientFX.entities.DrawableEntity;
+import com.jsonRPGClientFX.entities.TerrainEntity;
+import com.jsonRPGClientFX.entities.mapEnteties.Layer;
+import com.jsonRPGClientFX.entities.mapEnteties.MapEntity;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -19,14 +19,16 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.Map;
 
 public class Main extends Application{
 
 
     static int suparPiecOfShittConstant = 32;
     static ArrayList<File> files = new ArrayList<>();
+    Map<String, Layer> map;
+    MapEntity mapEntity = new MapEntity("testMapa",map);
+
 
     static {
         files.add(new File("assets/terrain/1470105_3.png"));
@@ -64,6 +66,10 @@ public class Main extends Application{
 
             };
 
+
+
+    private static DrawableEntity[][] drawableEntities;
+
     int i = 0;
     public static void main(String[] args){
         launch(args);
@@ -86,10 +92,37 @@ public class Main extends Application{
 
         Canvas mainLayer = new Canvas(ultraShittedWidth, ultraShittedHeight);
         Canvas testLayer = new Canvas(200,200);
-        GraphicsContext mainLayerGc = mainLayer.getGraphicsContext2D();
+        Canvas newLayer = new Canvas(ultraShittedWidth,ultraShittedHeight);
+        GraphicsContext mainLayerGraphicCtx = mainLayer.getGraphicsContext2D();
         GraphicsContext testLayerGc = testLayer.getGraphicsContext2D();
-        root.getChildren().addAll(mainLayer,testLayer);
+        GraphicsContext newLayerGCtx = newLayer.getGraphicsContext2D();
+        root.getChildren().addAll(mainLayer,testLayer, newLayer);
 
+
+        drawableEntities = new DrawableEntity[mapa[0].length][mapa.length];
+        for (int y = 0; y <  mapa.length; y++) {
+            for (int x = 0; x < mapa[0].length ; x ++) {
+                double yC = suparPiecOfShittConstant * y;
+                double xC = suparPiecOfShittConstant * x;
+                switch (mapa[y][x]) {
+                    case 0: {
+                        TerrainEntity terrainEntity = new TerrainEntity("name"+y+x, xC, yC);
+                        terrainEntity.setFile(fileProvider(terrainEntity.getType()));
+                        drawableEntities[x][y] = terrainEntity;
+                        break;
+                    }
+                    case 1: {
+                        DecorationEntity decorationEntity = new DecorationEntity("name"+y+x, xC, yC);
+                        decorationEntity.setFile(fileProvider(decorationEntity.getType()));
+                        drawableEntities[x][y] = decorationEntity;
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+        }
 
 
         //Layer filler algorithm proto
@@ -104,14 +137,27 @@ public class Main extends Application{
 //            x+=suparPiecOfShittConstant;
 //        }
 
-        for (int y = 0; y <  mapa.length; y++) {
-            int yC = suparPiecOfShittConstant * y;
+//        for (int y = 0; y <  mapa.length; y++) {
+//            int yC = suparPiecOfShittConstant * y;
+//
+//            System.out.println("y " + yC);
+//            for (int x = 0; x < mapa[0].length ; x ++) {
+//                int xC = suparPiecOfShittConstant * x;
+//
+//                mainLayerGraphicCtx.drawImage(imageProcessor(mapa[y][x]), xC , yC,suparPiecOfShittConstant,suparPiecOfShittConstant);
+//            }
+//        }
 
-            System.out.println("y " + yC);
-            for (int x = 0; x < mapa[0].length ; x ++) {
-                int xC = suparPiecOfShittConstant * x;
 
-                mainLayerGc.drawImage(imageProcessor(mapa[y][x]), xC , yC,suparPiecOfShittConstant,suparPiecOfShittConstant);
+        for (int y = 0; y <  drawableEntities.length; y++) {
+//            int yC = suparPiecOfShittConstant * y;
+
+//            System.out.println("y " + yC);
+            for (int x = 0; x < drawableEntities[0].length ; x ++) {
+//                int xC = suparPiecOfShittConstant * x;
+
+                DrawableEntity drawableEntity = drawableEntities[y][x];
+                newLayerGCtx.drawImage(drawableEntity.getImage(), drawableEntity.getX() , drawableEntity.getY(), suparPiecOfShittConstant,suparPiecOfShittConstant);
             }
         }
 
@@ -155,5 +201,19 @@ public class Main extends Application{
 //
     public Image imageProcessor(int i){
         return new Image(files.get(i).toURI().toString());
+    }
+
+    public File fileProvider(DrawableEntity.Type type){
+        switch (type) {
+            case TERRAIN: {
+                return files.get(0);
+            }
+            case ITEM: {
+                return files.get(1);
+            }
+            default: {
+                return null;
+            }
+        }
     }
 }
