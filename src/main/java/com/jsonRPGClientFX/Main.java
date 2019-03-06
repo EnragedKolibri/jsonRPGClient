@@ -3,8 +3,6 @@ package com.jsonRPGClientFX;
 import com.jsonRPGClientFX.entities.DecorationEntity;
 import com.jsonRPGClientFX.entities.DrawableEntity;
 import com.jsonRPGClientFX.entities.TerrainEntity;
-import com.jsonRPGClientFX.entities.mapEnteties.Layer;
-import com.jsonRPGClientFX.entities.mapEnteties.MapEntity;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -51,23 +49,6 @@ public class Main extends Application{
 
             };
 
-    private static int[][] mapa1 =
-            {
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-
-            };
-
-
-
     private static DrawableEntity[][] drawableEntities;
 
     int i = 0;
@@ -98,6 +79,8 @@ public class Main extends Application{
         GraphicsContext newLayerGCtx = newLayer.getGraphicsContext2D();
         root.getChildren().addAll(mainLayer,testLayer, newLayer);
 
+        TerrainEntity.TerrainType terrainType = TerrainEntity.TerrainType.GROUND;
+
 
         drawableEntities = new DrawableEntity[mapa[0].length][mapa.length];
         for (int y = 0; y <  mapa.length; y++) {
@@ -106,7 +89,7 @@ public class Main extends Application{
                 double xC = suparPiecOfShittConstant * x;
                 switch (mapa[y][x]) {
                     case 0: {
-                        TerrainEntity terrainEntity = new TerrainEntity("name"+y+x, xC, yC);
+                        TerrainEntity terrainEntity = new TerrainEntity("name"+y+x, terrainType, xC, yC);;
                         terrainEntity.setFile(fileProvider(terrainEntity.getType()));
                         drawableEntities[x][y] = terrainEntity;
                         break;
