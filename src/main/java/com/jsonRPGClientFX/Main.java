@@ -151,14 +151,14 @@ public class Main extends Application{
         //Creating the mouse event handler
         EventHandler<MouseEvent> eventHandler = e -> {
             System.out.println("Event handeled");
-            gameService.getRegisteredGraphicContext(testLayer).drawImage(new Image(new File("assets/terrain/blood_fountain.png").toURI().toString()),i,0,32,32);
+//            gameService.getRegisteredGraphicContext(newLayer).clearRect(i,0,32,32);
+            gameService.getRegisteredGraphicContext(newLayer).drawImage(new Image(new File("assets/terrain/blood_fountain.png").toURI().toString()),i,0,32,32);
             i+=32;
         };
         //Registering the event filter
         gameService.getRegisteredCanvas(testLayer).addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
-//        root.getChildren().get(2).addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
 
-        gameService.getRegisteredGraphicContext(mainLayer).drawImage(new Image(new File("assets/terrain/blood_fountain.png").toURI().toString()),i,0,32,32);
+
 
 
 
