@@ -3,6 +3,7 @@ package com.jsonRPGClientFX;
 import com.jsonRPGClientFX.entities.DecorationEntity;
 import com.jsonRPGClientFX.entities.DrawableEntity;
 import com.jsonRPGClientFX.entities.TerrainEntity;
+import com.jsonRPGClientFX.services.GameService;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -22,10 +23,12 @@ import java.util.Map;
 public class Main extends Application{
 
 
+
     static int suparPiecOfShittConstant = 32;
     static ArrayList<File> files = new ArrayList<>();
-    Map<String, Layer> map;
-    MapEntity mapEntity = new MapEntity("testMapa",map);
+    private GameService gameService = new GameService();
+   // Map<String, Layer> map;
+   // MapEntity mapEntity = new MapEntity("testMapa",map);
 
 
     static {
@@ -70,14 +73,14 @@ public class Main extends Application{
 
         Scene s = new Scene(root, ultraShittedWidth, ultraShittedHeight, Color.BLACK);
 
-
-        Canvas mainLayer = new Canvas(ultraShittedWidth, ultraShittedHeight);
-        Canvas testLayer = new Canvas(200,200);
-        Canvas newLayer = new Canvas(ultraShittedWidth,ultraShittedHeight);
-        GraphicsContext mainLayerGraphicCtx = mainLayer.getGraphicsContext2D();
-        GraphicsContext testLayerGc = testLayer.getGraphicsContext2D();
-        GraphicsContext newLayerGCtx = newLayer.getGraphicsContext2D();
-        root.getChildren().addAll(mainLayer,testLayer, newLayer);
+        String mainLayer = "mainLayer";
+        String testLayer = "testLayer";
+        String newLayer = "newLayer";
+        gameService.registerNewGraphicContext(mainLayer,ultraShittedWidth,ultraShittedHeight);
+        gameService.registerNewGraphicContext(newLayer,ultraShittedWidth,ultraShittedHeight);
+        gameService.registerNewGraphicContext(testLayer,200,200);
+//        root.getChildren().addAll(gameService.getAllRegisteredCanvas());
+        gameService.getAllRegisteredCanvas().forEach(canvas -> root.getChildren().add(canvas));
 
         TerrainEntity.TerrainType terrainType = TerrainEntity.TerrainType.GROUND;
 
@@ -140,25 +143,22 @@ public class Main extends Application{
 //                int xC = suparPiecOfShittConstant * x;
 
                 DrawableEntity drawableEntity = drawableEntities[y][x];
-                newLayerGCtx.drawImage(drawableEntity.getImage(), drawableEntity.getX() , drawableEntity.getY(), suparPiecOfShittConstant,suparPiecOfShittConstant);
+                gameService.getRegisteredGraphicContext(newLayer).drawImage(drawableEntity.getImage(), drawableEntity.getX() , drawableEntity.getY(), suparPiecOfShittConstant,suparPiecOfShittConstant);
             }
         }
 
 
         //Creating the mouse event handler
-        EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-
-
-                testLayerGc.drawImage(new Image(new File("assets/terrain/blood_fountain.png").toURI().toString()),i,0,32,32);
-                i+=32;
-
-
-            }
+        EventHandler<MouseEvent> eventHandler = e -> {
+            System.out.println("Event handeled");
+            gameService.getRegisteredGraphicContext(testLayer).drawImage(new Image(new File("assets/terrain/blood_fountain.png").toURI().toString()),i,0,32,32);
+            i+=32;
         };
         //Registering the event filter
-        testLayer.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
+        gameService.getRegisteredCanvas(testLayer).addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
+//        root.getChildren().get(2).addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
+
+        gameService.getRegisteredGraphicContext(mainLayer).drawImage(new Image(new File("assets/terrain/blood_fountain.png").toURI().toString()),i,0,32,32);
 
 
 
