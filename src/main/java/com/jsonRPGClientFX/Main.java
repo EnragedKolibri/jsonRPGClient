@@ -3,13 +3,13 @@ package com.jsonRPGClientFX;
 import com.jsonRPGClientFX.entities.DecorationEntity;
 import com.jsonRPGClientFX.entities.DrawableEntity;
 import com.jsonRPGClientFX.entities.TerrainEntity;
-import com.jsonRPGClientFX.services.GameService;
+import com.jsonRPGClientFX.services.LayerService;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -18,7 +18,6 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class Main extends Application{
 
@@ -26,7 +25,7 @@ public class Main extends Application{
 
     static int suparPiecOfShittConstant = 32;
     static ArrayList<File> files = new ArrayList<>();
-    private GameService gameService = new GameService();
+    private LayerService gameService = new LayerService();
    // Map<String, Layer> map;
    // MapEntity mapEntity = new MapEntity("testMapa",map);
 
@@ -55,6 +54,7 @@ public class Main extends Application{
     private static DrawableEntity[][] drawableEntities;
 
     int i = 0;
+    int j = 0;
     public static void main(String[] args){
         launch(args);
     }
@@ -135,27 +135,47 @@ public class Main extends Application{
 //        }
 
 
-        for (int y = 0; y <  drawableEntities.length; y++) {
-//            int yC = suparPiecOfShittConstant * y;
 
-//            System.out.println("y " + yC);
-            for (int x = 0; x < drawableEntities[0].length ; x ++) {
-//                int xC = suparPiecOfShittConstant * x;
 
-                DrawableEntity drawableEntity = drawableEntities[y][x];
-                gameService.getRegisteredGraphicContext(newLayer).drawImage(drawableEntity.getImage(), drawableEntity.getX() , drawableEntity.getY(), suparPiecOfShittConstant,suparPiecOfShittConstant);
-            }
-        }
-
+        reRender(gameService.getRegisteredGraphicContext(mainLayer));
+        Image testMoving = new Image(new File("assets/terrain/blood_fountain.png").toURI().toString());
 
         //Creating the mouse event handler
         EventHandler<MouseEvent> eventHandler = e -> {
-            System.out.println("Event handeled");
+            System.out.println("Mouse Event handled");
 //            gameService.getRegisteredGraphicContext(newLayer).clearRect(i,0,32,32);
-            gameService.getRegisteredGraphicContext(newLayer).drawImage(new Image(new File("assets/terrain/blood_fountain.png").toURI().toString()),i,0,32,32);
+            gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
             i+=32;
         };
         //Registering the event filter
+
+
+        EventHandler<KeyEvent> keyEventEventHandler = e -> {
+            reRender(gameService.getRegisteredGraphicContext(mainLayer));
+
+            System.out.println("Key pressed "+e.getCode());
+           switch (e.getCode().toString()) {
+               case "W":
+                   System.out.println("W");
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j--,32,32);
+                   break;
+               case "A":
+                   System.out.println("A");
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i--,0,32,32);
+                   break;
+               case "S":
+                   System.out.println("S");
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j++,32,32);
+                   break;
+               case "D":
+                   System.out.println("D");
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i++,0,32,32);
+                   break;
+           }
+
+        };
+
+        s.addEventFilter(KeyEvent.KEY_PRESSED, keyEventEventHandler);
         gameService.getRegisteredCanvas(testLayer).addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
 
 
@@ -172,9 +192,19 @@ public class Main extends Application{
     }
     //Game files processor proto
 
-    public int zachemYaJivy(int pzdc)
+    public void reRender(GraphicsContext graphicsContext)
     {
-        return pzdc*suparPiecOfShittConstant;
+        for (int y = 0; y <  drawableEntities.length; y++) {
+//            int yC = suparPiecOfShittConstant * y;
+
+//            System.out.println("y " + yC);
+            for (int x = 0; x < drawableEntities[0].length ; x ++) {
+//                int xC = suparPiecOfShittConstant * x;
+
+                DrawableEntity drawableEntity = drawableEntities[y][x];
+                graphicsContext.drawImage(drawableEntity.getImage(), drawableEntity.getX() , drawableEntity.getY(), suparPiecOfShittConstant,suparPiecOfShittConstant);
+            }
+        }
     }
 
 //    public Image imageProcessor(List<File> file){

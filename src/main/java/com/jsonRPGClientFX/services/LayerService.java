@@ -5,13 +5,11 @@ import javafx.scene.canvas.GraphicsContext;
 
 import java.util.*;
 
-public class GameService {
+public class LayerService {
 
-    private Map<String, Canvas> canvasMap = new HashMap<>();
-    private List<String> order = new ArrayList<>();
+    private Map<String, Canvas> canvasMap = new LinkedHashMap<>();
 
     public void registerNewGraphicContext(String canvasName, int width, int height) {
-        order.add(canvasName);
         canvasMap.put(canvasName, new Canvas(width, height));
     }
 
@@ -25,13 +23,8 @@ public class GameService {
     }
 
     public Collection<Canvas> getAllRegisteredCanvas() {
-        List<Canvas> canvasList = new ArrayList<>();
-        order.forEach(name -> {
-            System.out.println("Canvas " + name);
-            canvasList.add(getRegisteredCanvas(name));
-        });
-        return canvasList;
-//        return canvasMap.values();
+
+        return canvasMap.values();
     }
 
 }

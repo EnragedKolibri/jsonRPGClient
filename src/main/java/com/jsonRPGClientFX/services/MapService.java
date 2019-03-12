@@ -6,11 +6,6 @@ import java.util.Map;
 
 public class MapService {
 
-    static ArrayList<File> files = new ArrayList<>();
-    static {
-        files.add(new File("assets/terrain/1470105_3.png"));
-        files.add(new File("assets/terrain/2473250_1.png"));
-    }
 
 
     private static int[][] mapa =
