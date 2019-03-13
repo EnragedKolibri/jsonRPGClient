@@ -6,8 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="jsonRPGclientFX" />
+        <module name="jsonRPGClient" />
         <module name="jsonRPGClientFX" />
+        <module name="jsonRPGclientFX" />
       </profile>
     </annotationProcessing>
   </component>

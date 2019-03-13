@@ -154,22 +154,23 @@ public class Main extends Application{
             reRender(gameService.getRegisteredGraphicContext(mainLayer));
 
             System.out.println("Key pressed "+e.getCode());
+            gameService.getRegisteredGraphicContext(newLayer).clearRect(i,j,33,33);
            switch (e.getCode().toString()) {
                case "W":
                    System.out.println("W");
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j--,32,32);
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,--j,32,32);
                    break;
                case "A":
                    System.out.println("A");
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i--,0,32,32);
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,--i,j,32,32);
                    break;
                case "S":
                    System.out.println("S");
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j++,32,32);
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,++j,32,32);
                    break;
                case "D":
                    System.out.println("D");
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i++,0,32,32);
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,++i,j,32,32);
                    break;
            }
 
