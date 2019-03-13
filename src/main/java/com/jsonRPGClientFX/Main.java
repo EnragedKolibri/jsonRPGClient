@@ -4,23 +4,35 @@ import com.jsonRPGClientFX.entities.DecorationEntity;
 import com.jsonRPGClientFX.entities.DrawableEntity;
 import com.jsonRPGClientFX.entities.TerrainEntity;
 import com.jsonRPGClientFX.services.LayerService;
+import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class Main extends Application{
 
+    Image george = new Image(new File("assets/george.png").toURI().toString());
+    private int count = 4;
+    private int colums = 2;
+    private int offsetX = 0;
+    private int offsetY = 0;
+    private int width = 48;
+    private int height = 48;
 
 
     static int suparPiecOfShittConstant = 32;
@@ -62,6 +74,13 @@ public class Main extends Application{
     @Override
     public void start(Stage stage) throws Exception{
 
+        ImageView imageView = new ImageView(george);
+        imageView.setViewport(new Rectangle2D(offsetX,offsetY,width,height));
+        SpriteAnimation spriteAnimation = new SpriteAnimation(imageView, Duration.millis(3000),count,colums,offsetX,offsetY,width,height);
+        spriteAnimation.setCycleCount(Animation.INDEFINITE);
+        spriteAnimation.play();
+
+
 //        int ultraShittedWidth = zachemYaJivy(50);
 
         int ultraShittedWidth = mapa[0].length * suparPiecOfShittConstant;
@@ -81,6 +100,7 @@ public class Main extends Application{
         gameService.registerNewGraphicContext(testLayer,200,200);
 //        root.getChildren().addAll(gameService.getAllRegisteredCanvas());
         gameService.getAllRegisteredCanvas().forEach(canvas -> root.getChildren().add(canvas));
+        root.getChildren().add(imageView);
 
         TerrainEntity.TerrainType terrainType = TerrainEntity.TerrainType.GROUND;
 
