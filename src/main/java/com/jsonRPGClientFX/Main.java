@@ -28,11 +28,12 @@ public class Main extends Application{
 
     Image george = new Image(new File("assets/george.png").toURI().toString());
     private int count = 4;
-    private int colums = 2;
+    private int colums = 1;
     private int offsetX = 0;
     private int offsetY = 0;
     private int width = 48;
     private int height = 48;
+    // доделать выбор колонки и строки независимо
 
 
     static int suparPiecOfShittConstant = 32;
@@ -76,7 +77,7 @@ public class Main extends Application{
 
         ImageView imageView = new ImageView(george);
         imageView.setViewport(new Rectangle2D(offsetX,offsetY,width,height));
-        SpriteAnimation spriteAnimation = new SpriteAnimation(imageView, Duration.millis(3000),count,colums,offsetX,offsetY,width,height);
+        SpriteAnimation spriteAnimation = new SpriteAnimation(imageView, Duration.millis(500),count,colums,offsetX,offsetY,width,height);
         spriteAnimation.setCycleCount(Animation.INDEFINITE);
         spriteAnimation.play();
 
