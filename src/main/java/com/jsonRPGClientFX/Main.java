@@ -83,9 +83,6 @@ public class Main extends Application{
 
     @Override
     public void start(Stage stage) throws Exception{
-        ImageView testimageView = new ImageView(tileset);
-        testimageView.setViewport(new Rectangle2D(0,0,32,32));
-
 
         ImageView imageView = new ImageView(boom);
         imageView.setViewport(new Rectangle2D(offsetX,offsetY,width,height));
