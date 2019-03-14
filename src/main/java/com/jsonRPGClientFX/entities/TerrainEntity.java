@@ -7,7 +7,8 @@ import java.io.File;
 public class TerrainEntity extends DrawableEntity {
 
     public enum TerrainType{
-        WALL, GROUND
+        VOID, WALL, GROUND;
+
     }
 
     private TerrainType terrainType;
@@ -16,6 +17,12 @@ public class TerrainEntity extends DrawableEntity {
 
         super(Type.TERRAIN, name, x, y);
         this.terrainType = terrainType;
+    }
+
+
+    public void setImage(Image image)
+    {
+        super.setImage(image);
     }
 
     public void setFile(File file) {

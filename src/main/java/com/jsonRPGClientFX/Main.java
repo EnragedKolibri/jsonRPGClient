@@ -8,7 +8,6 @@ import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -26,13 +25,14 @@ import java.util.ArrayList;
 
 public class Main extends Application{
 
-    Image george = new Image(new File("assets/george.png").toURI().toString());
-    private int count = 4;
-    private int colums = 1;
+    Image boom = new Image(new File("assets/QMqbQ.png").toURI().toString());
+    Image tileset = new Image(new File("assets/hyptosis_tile-art-batch-1.png").toURI().toString());
+    private int count = 7;
+    private int colums = 6;
     private int offsetX = 0;
     private int offsetY = 0;
-    private int width = 48;
-    private int height = 48;
+    private int width = 112;
+    private int height = 148;
     // доделать выбор колонки и строки независимо
 
 
@@ -59,7 +59,14 @@ public class Main extends Application{
                     {0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0},
                     {0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0},
                     {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0}
+                    {0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0}
 
 
             };
@@ -68,16 +75,22 @@ public class Main extends Application{
 
     int i = 0;
     int j = 0;
+    private int velociped = 5;
+
     public static void main(String[] args){
         launch(args);
     }
 
     @Override
     public void start(Stage stage) throws Exception{
+        ImageView testimageView = new ImageView(tileset);
+        testimageView.setViewport(new Rectangle2D(0,0,32,32));
 
-        ImageView imageView = new ImageView(george);
+
+        ImageView imageView = new ImageView(boom);
         imageView.setViewport(new Rectangle2D(offsetX,offsetY,width,height));
-        SpriteAnimation spriteAnimation = new SpriteAnimation(imageView, Duration.millis(500),count,colums,offsetX,offsetY,width,height);
+
+        SpriteAnimation spriteAnimation = new SpriteAnimation(imageView, Duration.millis(700),count,colums,offsetX,offsetY,width,height);
         spriteAnimation.setCycleCount(Animation.INDEFINITE);
         spriteAnimation.play();
 
@@ -103,7 +116,8 @@ public class Main extends Application{
         gameService.getAllRegisteredCanvas().forEach(canvas -> root.getChildren().add(canvas));
         root.getChildren().add(imageView);
 
-        TerrainEntity.TerrainType terrainType = TerrainEntity.TerrainType.GROUND;
+        TerrainEntity.TerrainType groundType = TerrainEntity.TerrainType.GROUND;
+        TerrainEntity.TerrainType voidType = TerrainEntity.TerrainType.VOID;
 
 
         drawableEntities = new DrawableEntity[mapa[0].length][mapa.length];
@@ -113,18 +127,19 @@ public class Main extends Application{
                 double xC = suparPiecOfShittConstant * x;
                 switch (mapa[y][x]) {
                     case 0: {
-                        TerrainEntity terrainEntity = new TerrainEntity("name"+y+x, terrainType, xC, yC);;
-                        terrainEntity.setFile(fileProvider(terrainEntity.getType()));
+                        TerrainEntity terrainEntity = new TerrainEntity("name"+y+x, voidType, xC, yC);;
+                        terrainEntity.setFile(files.get(0));
                         drawableEntities[x][y] = terrainEntity;
                         break;
                     }
                     case 1: {
                         DecorationEntity decorationEntity = new DecorationEntity("name"+y+x, xC, yC);
-                        decorationEntity.setFile(fileProvider(decorationEntity.getType()));
+                        decorationEntity.setFile(files.get(1));
                         drawableEntities[x][y] = decorationEntity;
                         break;
                     }
                     default: {
+
                         break;
                     }
                 }
@@ -172,26 +187,32 @@ public class Main extends Application{
 
 
         EventHandler<KeyEvent> keyEventEventHandler = e -> {
-            reRender(gameService.getRegisteredGraphicContext(mainLayer));
 
+
+
+            reRender(gameService.getRegisteredGraphicContext(mainLayer));
             System.out.println("Key pressed "+e.getCode());
             gameService.getRegisteredGraphicContext(newLayer).clearRect(i,j,33,33);
            switch (e.getCode().toString()) {
                case "W":
                    System.out.println("W");
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,--j,32,32);
+                   j -= velociped;
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
                    break;
                case "A":
                    System.out.println("A");
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,--i,j,32,32);
+                   i -= velociped;
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
                    break;
                case "S":
                    System.out.println("S");
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,++j,32,32);
+                   j += velociped;
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
                    break;
                case "D":
                    System.out.println("D");
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,++i,j,32,32);
+                   i += velociped;
+                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving, i,j,32,32);
                    break;
            }
 
@@ -225,29 +246,6 @@ public class Main extends Application{
 
                 DrawableEntity drawableEntity = drawableEntities[y][x];
                 graphicsContext.drawImage(drawableEntity.getImage(), drawableEntity.getX() , drawableEntity.getY(), suparPiecOfShittConstant,suparPiecOfShittConstant);
-            }
-        }
-    }
-
-//    public Image imageProcessor(List<File> file){
-//
-//        return new Image(file.get(new Random().nextInt(file.size())).toURI().toString());
-//    }
-//
-    public Image imageProcessor(int i){
-        return new Image(files.get(i).toURI().toString());
-    }
-
-    public File fileProvider(DrawableEntity.Type type){
-        switch (type) {
-            case TERRAIN: {
-                return files.get(0);
-            }
-            case ITEM: {
-                return files.get(1);
-            }
-            default: {
-                return null;
             }
         }
     }
