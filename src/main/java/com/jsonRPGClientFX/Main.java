@@ -217,22 +217,26 @@ public class Main extends Application{
                case "W":
                    System.out.println("W");
                    j -= velociped;
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+                   drawRotatedImage(gameService.getRegisteredGraphicContext(newLayer),testMoving,0,i,j);
+                   //gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
                    break;
                case "A":
                    System.out.println("A");
                    i -= velociped;
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+                   drawRotatedImage(gameService.getRegisteredGraphicContext(newLayer),testMoving,270,i,j);
+                   //gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
                    break;
                case "S":
                    System.out.println("S");
                    j += velociped;
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+                   drawRotatedImage(gameService.getRegisteredGraphicContext(newLayer),testMoving,180,i,j);
+                   //gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
                    break;
                case "D":
                    System.out.println("D");
                    i += velociped;
-                   gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving, i,j,32,32);
+                   drawRotatedImage(gameService.getRegisteredGraphicContext(newLayer),testMoving,90,i,j);
+                   //gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving, i,j,32,32);
                    break;
            }
 
