@@ -12,31 +12,31 @@ public class Main {
 
 
 
-        tileSetsCutter("hyptosis_tile-art-batch-1");
+        tileSetsCutter("hyptosis_tile-art-batch-1",32);
 
 
     }
 
-    static void tileSetsCutter(String imageName) throws IOException {
+    static void tileSetsCutter(String imageName, int step) throws IOException {
         File file = new File("assets\\" + imageName);
         file.mkdir();
         final BufferedImage source = ImageIO.read(new File("assets/" + imageName + ".png"));
         int idx = 0;
         int y = 0;
-        int lastYPoint = source.getHeight() - 32;
-        int lastXPoint = source.getWidth() - 32;
-        for (int x = 0; x != source.getWidth(); x += 32) {
+        int lastYPoint = source.getHeight() - step;
+        int lastXPoint = source.getWidth() - step;
+        for (int x = 0; x != source.getWidth(); x += step) {
             if (x == lastXPoint) {
-                ImageIO.write(source.getSubimage(x, y, 32, 32), "png", new File("assets/" + imageName + "/" + idx++ + ".png"));
+                ImageIO.write(source.getSubimage(x, y, step, step), "png", new File("assets/" + imageName + "/" + idx++ + ".png"));
                 x = 0;
-                y += 32;
+                y += step;
             }
             if (y == lastYPoint&&x==lastXPoint)
             {
-                ImageIO.write(source.getSubimage(x, y, 32, 32), "png", new File("assets/" + imageName + "/" + idx++ + ".png"));
+                ImageIO.write(source.getSubimage(x, y, step, step), "png", new File("assets/" + imageName + "/" + idx++ + ".png"));
                 break;
             }
-            ImageIO.write(source.getSubimage(x, y, 32, 32), "png", new File("assets/" + imageName + "/" + idx++ + ".png"));
+            ImageIO.write(source.getSubimage(x, y, step, step), "png", new File("assets/" + imageName + "/" + idx++ + ".png"));
 
         }
     }

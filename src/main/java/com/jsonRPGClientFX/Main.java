@@ -17,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -77,6 +78,20 @@ public class Main extends Application{
 
 
             };
+
+    private void rotate(GraphicsContext gc, double angle, double px, double py) {
+        Rotate r = new Rotate(angle, px, py);
+        gc.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
+    }
+
+    private void drawRotatedImage(GraphicsContext gc, Image image, double angle, double tlpx, double tlpy) {
+        gc.save(); // saves the current state on stack, including the current transform
+        rotate(gc, angle, tlpx + image.getWidth() / 2, tlpy + image.getHeight() / 2);
+        gc.drawImage(image, tlpx, tlpy);
+        gc.restore(); // back to original state (before rotation)
+    }
+
+
 
     private static DrawableEntity[][] drawableEntities;
 
@@ -184,8 +199,9 @@ public class Main extends Application{
         EventHandler<MouseEvent> eventHandler = e -> {
             System.out.println("Mouse Event handled");
 //            gameService.getRegisteredGraphicContext(newLayer).clearRect(i,0,32,32);
-            gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
-            i+=32;
+            drawRotatedImage(gameService.getRegisteredGraphicContext(newLayer),testMoving,90,10,10);
+            //gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+            //i+=32;
         };
         //Registering the event filter
 
