@@ -14,4 +14,9 @@ public class DecorationEntity extends DrawableEntity {
         super.setImage(new Image(file.toURI().toString()));
     }
 
+    public void setImage(Image image)
+    {
+        super.setImage(image);
+    }
+
 }

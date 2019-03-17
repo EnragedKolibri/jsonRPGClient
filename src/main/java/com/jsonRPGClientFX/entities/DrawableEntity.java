@@ -7,7 +7,7 @@ import java.io.File;
 public abstract class DrawableEntity {
 
     public enum Type {
-        TERRAIN, PLAYER, ITEM, COLISION
+        TERRAIN, PLAYER, ITEM
     }
 
     private String name;

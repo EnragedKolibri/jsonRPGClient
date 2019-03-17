@@ -4,6 +4,7 @@ import com.jsonRPGClientFX.entities.DecorationEntity;
 import com.jsonRPGClientFX.entities.DrawableEntity;
 import com.jsonRPGClientFX.entities.TerrainEntity;
 import com.jsonRPGClientFX.services.LayerService;
+import com.jsonRPGClientFX.utils.Constants;
 import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -23,25 +24,18 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.stream.IntStream;
 
-public class Main extends Application{
+public class Main extends Application {
 
-    Image boom = new Image(new File("assets/QMqbQ.png").toURI().toString());
-    Image tileset = new Image(new File("assets/hyptosis_tile-art-batch-1.png").toURI().toString());
-    private int count = 7;
-    private int colums = 6;
-    private int offsetX = 0;
-    private int offsetY = 0;
-    private int width = 112;
-    private int height = 148;
     // доделать выбор колонки и строки независимо
-
-
-    static int suparPiecOfShittConstant = 32;
-    static ArrayList<File> files = new ArrayList<>();
-    private LayerService gameService = new LayerService();
-   // Map<String, Layer> map;
-   // MapEntity mapEntity = new MapEntity("testMapa",map);
+    
+    private static ArrayList<File> files = new ArrayList<>();
+    private LayerService layerService = new LayerService();
+    Random random = new Random();
+    // Map<String, Layer> map;
+    // MapEntity mapEntity = new MapEntity("testMapa",map);
 
 
     static {
@@ -58,101 +52,128 @@ public class Main extends Application{
     // доступны будут только эти углы поворота и в случае если угол не равен вышеперечисленным отдаем эррор с координатами(длинна конкретного масива[0-х], длнна масива масивов) где в масиве ошибка
     private static int[][] mapa =
             {
-                    {0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0},
-                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0}
+                    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 
 
             };
 
-    private void rotate(GraphicsContext gc, double angle, double px, double py) {
-        Rotate r = new Rotate(angle, px, py);
-        gc.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
-    }
+    private static int[][] collisionMapa =
+            {
+                    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 
-    private void drawRotatedImage(GraphicsContext gc, Image image, double angle, double tlpx, double tlpy) {
+
+            };
+
+    private void drawRotatedImage(GraphicsContext gc, Image image, double angle, double x, double y, double width, double height) {
+        Rotate r = new Rotate(angle, x + image.getWidth() / 2, y + image.getHeight() / 2);
         gc.save(); // saves the current state on stack, including the current transform
-        rotate(gc, angle, tlpx + image.getWidth() / 2, tlpy + image.getHeight() / 2);
-        gc.drawImage(image, tlpx, tlpy);
+        gc.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
+        gc.drawImage(image, x, y, width, height);
         gc.restore(); // back to original state (before rotation)
     }
 
 
-
     private static DrawableEntity[][] drawableEntities;
 
-    int i = 0;
-    int j = 0;
+    private int i = 0;
+    private int j = 0;
     private int velociped = 5;
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         launch(args);
     }
 
     @Override
-    public void start(Stage stage) throws Exception{
+    public void start(Stage stage) throws Exception {
+        Pane root = new StackPane();
 
-        ImageView imageView = new ImageView(boom);
-        imageView.setViewport(new Rectangle2D(offsetX,offsetY,width,height));
+        Image boom = new Image(new File("assets/QMqbQ.png").toURI().toString());
+        int count = 7;
+        int colums = 6;
+        int offsetX = 0;
+        int offsetY = 0;
+        int width = 112;
+        int height = 148;
+        ImageView explosionImageView = new ImageView(boom);
+        explosionImageView.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
 
-        SpriteAnimation spriteAnimation = new SpriteAnimation(imageView, Duration.millis(700),count,colums,offsetX,offsetY,width,height);
+
+        SpriteAnimation spriteAnimation = new SpriteAnimation(explosionImageView, Duration.millis(700), count, colums, offsetX, offsetY, width, height);
         spriteAnimation.setCycleCount(Animation.INDEFINITE);
         spriteAnimation.play();
 
 
 //        int ultraShittedWidth = zachemYaJivy(50);
 
-        int ultraShittedWidth = mapa[0].length * suparPiecOfShittConstant;
-        int ultraShittedHeight = mapa.length * suparPiecOfShittConstant;
+        int ultraShittedWidth = mapa[0].length * Constants.TILE_SIZE;
+        int ultraShittedHeight = mapa.length * Constants.TILE_SIZE;
 //        int ultraShittedHeight = zachemYaJivy(20);
 
-        Pane root = new StackPane();
-        root.setPrefSize(ultraShittedWidth,ultraShittedHeight);
+
+        root.setPrefSize(ultraShittedWidth, ultraShittedHeight);
 
         Scene s = new Scene(root, ultraShittedWidth, ultraShittedHeight, Color.BLACK);
 
         String mainLayer = "mainLayer";
         String testLayer = "testLayer";
         String newLayer = "newLayer";
-        gameService.registerNewGraphicContext(mainLayer,ultraShittedWidth,ultraShittedHeight);
-        gameService.registerNewGraphicContext(newLayer,ultraShittedWidth,ultraShittedHeight);
-        gameService.registerNewGraphicContext(testLayer,200,200);
-//        root.getChildren().addAll(gameService.getAllRegisteredCanvas());
-        gameService.getAllRegisteredCanvas().forEach(canvas -> root.getChildren().add(canvas));
-        root.getChildren().add(imageView);
+        layerService.registerNewGraphicContext(mainLayer, ultraShittedWidth, ultraShittedHeight);
+        layerService.registerNewGraphicContext(newLayer, ultraShittedWidth, ultraShittedHeight);
+        layerService.registerNewGraphicContext(testLayer, 200, 200);
 
-        TerrainEntity.TerrainType groundType = TerrainEntity.TerrainType.GROUND;
+        layerService.getAllRegisteredCanvas().forEach(canvas -> root.getChildren().add(canvas));
+        root.getChildren().add(explosionImageView);
+
+        //TerrainEntity.TerrainType groundType = TerrainEntity.TerrainType.GROUND;
         TerrainEntity.TerrainType voidType = TerrainEntity.TerrainType.VOID;
 
 
         drawableEntities = new DrawableEntity[mapa[0].length][mapa.length];
-        for (int y = 0; y <  mapa.length; y++) {
-            for (int x = 0; x < mapa[0].length ; x ++) {
-                double yC = suparPiecOfShittConstant * y;
-                double xC = suparPiecOfShittConstant * x;
+        for (int y = 0; y < mapa.length; y++) {
+            for (int x = 0; x < mapa[0].length; x++) {
+                double yC = Constants.TILE_SIZE * y;
+                double xC = Constants.TILE_SIZE * x;
                 switch (mapa[y][x]) {
                     case 0: {
-                        TerrainEntity terrainEntity = new TerrainEntity("name"+y+x, voidType, xC, yC);;
+                        TerrainEntity terrainEntity = new TerrainEntity("name" + y + x, voidType, xC, yC);
                         terrainEntity.setFile(files.get(0));
                         drawableEntities[x][y] = terrainEntity;
                         break;
                     }
                     case 1: {
-                        DecorationEntity decorationEntity = new DecorationEntity("name"+y+x, xC, yC);
+                        DecorationEntity decorationEntity = new DecorationEntity("name" + y + x, xC, yC);
                         decorationEntity.setFile(files.get(1));
                         drawableEntities[x][y] = decorationEntity;
                         break;
@@ -190,67 +211,57 @@ public class Main extends Application{
 //        }
 
 
-
-
-        reRender(gameService.getRegisteredGraphicContext(mainLayer));
+        mapRender(layerService.getRegisteredGraphicContext(mainLayer), drawableEntities);
         Image testMoving = new Image(new File("assets/terrain/blood_fountain.png").toURI().toString());
 
         //Creating the mouse event handler
         EventHandler<MouseEvent> eventHandler = e -> {
-            System.out.println("Mouse Event handled");
-//            gameService.getRegisteredGraphicContext(newLayer).clearRect(i,0,32,32);
-            drawRotatedImage(gameService.getRegisteredGraphicContext(newLayer),testMoving,90,10,10);
-            //gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+            log("Mouse Event handled");
+//            layerService.getRegisteredGraphicContext(newLayer).clearRect(i,0,32,32);
+            //drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer),testMoving,90,10,10);
+            //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
             //i+=32;
         };
         //Registering the event filter
 
 
         EventHandler<KeyEvent> keyEventEventHandler = e -> {
-
-
-
-            reRender(gameService.getRegisteredGraphicContext(mainLayer));
-            System.out.println("Key pressed "+e.getCode());
-            gameService.getRegisteredGraphicContext(newLayer).clearRect(i,j,33,33);
-           switch (e.getCode().toString()) {
-               case "W":
-                   System.out.println("W");
-                   j -= velociped;
-                   drawRotatedImage(gameService.getRegisteredGraphicContext(newLayer),testMoving,0,i,j);
-                   //gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
-                   break;
-               case "A":
-                   System.out.println("A");
-                   i -= velociped;
-                   drawRotatedImage(gameService.getRegisteredGraphicContext(newLayer),testMoving,270,i,j);
-                   //gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
-                   break;
-               case "S":
-                   System.out.println("S");
-                   j += velociped;
-                   drawRotatedImage(gameService.getRegisteredGraphicContext(newLayer),testMoving,180,i,j);
-                   //gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
-                   break;
-               case "D":
-                   System.out.println("D");
-                   i += velociped;
-                   drawRotatedImage(gameService.getRegisteredGraphicContext(newLayer),testMoving,90,i,j);
-                   //gameService.getRegisteredGraphicContext(newLayer).drawImage(testMoving, i,j,32,32);
-                   break;
-           }
+            log("Key pressed " + e.getCode());
+            clearArea(layerService.getRegisteredGraphicContext(newLayer), i, j, 32, 32);
+            switch (e.getCode().toString()) {
+                case "W":
+                    log("W");
+                    j -= velociped;
+                    drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 0, i, j, 32, 32);
+                    //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+                    break;
+                case "A":
+                    log("A");
+                    i -= velociped;
+                    drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 270, i, j, 32, 32);
+                    //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+                    break;
+                case "S":
+                    log("S");
+                    j += velociped;
+                    drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 180, i, j, 32, 32);
+                    //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+                    break;
+                case "D":
+                    log("D");
+                    i += velociped;
+                    drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 90, i, j, 32, 32);
+                    //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving, i,j,32,32);
+                    break;
+            }
 
         };
 
         s.addEventFilter(KeyEvent.KEY_PRESSED, keyEventEventHandler);
-        gameService.getRegisteredCanvas(testLayer).addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
+        layerService.getRegisteredCanvas(testLayer).addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
 
 
-
-
-
-
-
+        stage.setTitle("Vision");
         stage.setScene(s);
         stage.setHeight(200);
         stage.setWidth(200);
@@ -259,18 +270,28 @@ public class Main extends Application{
     }
     //Game files processor proto
 
-    public void reRender(GraphicsContext graphicsContext)
-    {
-        for (int y = 0; y <  drawableEntities.length; y++) {
+    private void clearArea(GraphicsContext gc, double x, double y, double width, double height) {
+        gc.clearRect(x, y, width, height);
+    }
+
+    private void log(String str) {
+        System.out.println("[LOG-INFO]: " + str);
+    }
+
+    public void mapRender(GraphicsContext gc, DrawableEntity[][] drawableEntities) {
+        for (int y = 0; y < drawableEntities.length; y++) {
 //            int yC = suparPiecOfShittConstant * y;
 
 //            System.out.println("y " + yC);
-            for (int x = 0; x < drawableEntities[0].length ; x ++) {
+            for (int x = 0; x < drawableEntities[0].length; x++) {
 //                int xC = suparPiecOfShittConstant * x;
 
                 DrawableEntity drawableEntity = drawableEntities[y][x];
-                graphicsContext.drawImage(drawableEntity.getImage(), drawableEntity.getX() , drawableEntity.getY(), suparPiecOfShittConstant,suparPiecOfShittConstant);
+                gc.drawImage(drawableEntity.getImage(), drawableEntity.getX(), drawableEntity.getY(), Constants.TILE_SIZE, Constants.TILE_SIZE);
             }
         }
     }
+
+
+
 }

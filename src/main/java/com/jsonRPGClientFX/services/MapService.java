@@ -7,10 +7,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
+import java.util.stream.IntStream;
 
 public class MapService {
 
-
+    static Random random = new Random();
 
     private static int[][] mapa =
             {
@@ -42,6 +44,4 @@ public class MapService {
                     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
             };
-
-
 }
