@@ -5,18 +5,16 @@ import com.jsonRPGClientFX.entities.DrawableEntity;
 import com.jsonRPGClientFX.entities.TerrainEntity;
 import com.jsonRPGClientFX.services.LayerService;
 import com.jsonRPGClientFX.utils.Constants;
-import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
@@ -25,9 +23,17 @@ import javafx.util.Duration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class Main extends Application {
+    Image boom = new Image(new File("assets/QMqbQ.png").toURI().toString());
+    int count = 7;
+    int colums = 6;
+    int offsetX = 0;
+    int offsetY = 0;
+    int animationWidth = 112;
+    int animationHeight = 148;
+    ImageView explosionImageView = new ImageView(boom);
+
 
     // доделать выбор колонки и строки независимо
     
@@ -117,32 +123,18 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Pane root = new StackPane();
-
-        Image boom = new Image(new File("assets/QMqbQ.png").toURI().toString());
-        int count = 7;
-        int colums = 6;
-        int offsetX = 0;
-        int offsetY = 0;
-        int width = 112;
-        int height = 148;
-        ImageView explosionImageView = new ImageView(boom);
-        explosionImageView.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
-
-
-        SpriteAnimation spriteAnimation = new SpriteAnimation(explosionImageView, Duration.millis(700), count, colums, offsetX, offsetY, width, height);
-        spriteAnimation.setCycleCount(Animation.INDEFINITE);
-        spriteAnimation.play();
-
-
-//        int ultraShittedWidth = zachemYaJivy(50);
+        Group root = new Group();
 
         int ultraShittedWidth = mapa[0].length * Constants.TILE_SIZE;
         int ultraShittedHeight = mapa.length * Constants.TILE_SIZE;
 //        int ultraShittedHeight = zachemYaJivy(20);
+        explosionImageView.setViewport(new Rectangle2D(offsetX, offsetY, animationWidth, animationHeight));
+        SpriteAnimation spriteAnimation = new SpriteAnimation(explosionImageView, Duration.millis(700), count, colums, offsetX, offsetY, animationWidth, animationHeight);
+        spriteAnimation.setCycleCount(1);
 
 
-        root.setPrefSize(ultraShittedWidth, ultraShittedHeight);
+
+        //root.setPrefSize(ultraShittedWidth, ultraShittedHeight);
 
         Scene s = new Scene(root, ultraShittedWidth, ultraShittedHeight, Color.BLACK);
 
@@ -155,6 +147,7 @@ public class Main extends Application {
 
         layerService.getAllRegisteredCanvas().forEach(canvas -> root.getChildren().add(canvas));
         root.getChildren().add(explosionImageView);
+        explosionImageView.setX(100);
 
         //TerrainEntity.TerrainType groundType = TerrainEntity.TerrainType.GROUND;
         TerrainEntity.TerrainType voidType = TerrainEntity.TerrainType.VOID;
@@ -217,6 +210,11 @@ public class Main extends Application {
         //Creating the mouse event handler
         EventHandler<MouseEvent> eventHandler = e -> {
             log("Mouse Event handled");
+            //w112
+            //h148
+            explosionImageView.setX(e.getX()-animationWidth/2);
+            explosionImageView.setY(e.getY()-animationHeight+20);
+            spriteAnimation.play();
 //            layerService.getRegisteredGraphicContext(newLayer).clearRect(i,0,32,32);
             //drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer),testMoving,90,10,10);
             //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
@@ -234,6 +232,7 @@ public class Main extends Application {
                     j -= velociped;
                     drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 0, i, j, 32, 32);
                     //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+
                     break;
                 case "A":
                     log("A");
@@ -257,7 +256,8 @@ public class Main extends Application {
 
         };
 
-        s.addEventFilter(KeyEvent.KEY_PRESSED, keyEventEventHandler);
+        s.addEventHandler(KeyEvent.KEY_PRESSED, keyEventEventHandler);
+        s.addEventHandler(MouseEvent.MOUSE_CLICKED,eventHandler);
         layerService.getRegisteredCanvas(testLayer).addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
 
 
@@ -291,6 +291,11 @@ public class Main extends Application {
             }
         }
     }
+
+    //не забывать что анимация играет в image view который нужно добавлять в рут(группу для отображения в окне) а она пока существует только в методе окна
+    //нужно вынести группу в лист в отдельном класе (но в группе и так все узлы в листе)
+    //нужно хранить анимации в отдельном листе (но лучше привязывать к отдельным обьектам)(подумать о фабрике обьектов)(сложные обьекты с анимацией через нее , а не сложные тайлы отдельно
+    // или все через нее хз)
 
 
 

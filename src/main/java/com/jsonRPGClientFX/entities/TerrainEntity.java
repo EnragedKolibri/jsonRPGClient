@@ -7,7 +7,7 @@ import java.io.File;
 public class TerrainEntity extends DrawableEntity {
 
     public enum TerrainType{
-        VOID, WALL, GROUND;
+        VOID, GROUND;
 
     }
 

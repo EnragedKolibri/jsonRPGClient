@@ -1,27 +1,19 @@
 package org.cut;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.RasterFormatException;
 import java.io.File;
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-
-
-
-
         tileSetsCutter("hyptosis_tile-art-batch-1",32);
-
-
     }
 
     static void tileSetsCutter(String imageName, int step) throws IOException {
         File file = new File("assets\\" + imageName);
         file.mkdir();
         final BufferedImage source = ImageIO.read(new File("assets/" + imageName + ".png"));
-        int idx = 0;
+        int idx = 1;
         int y = 0;
         int lastYPoint = source.getHeight() - step;
         int lastXPoint = source.getWidth() - step;
