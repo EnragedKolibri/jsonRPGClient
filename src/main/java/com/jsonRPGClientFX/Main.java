@@ -22,6 +22,7 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Random;
 
 public class Main extends Application {
@@ -32,7 +33,10 @@ public class Main extends Application {
     int offsetY = 0;
     int animationWidth = 112;
     int animationHeight = 148;
+    int animationCounter=0;
     ImageView explosionImageView = new ImageView(boom);
+    LinkedHashMap<Integer,SpriteAnimation> spriteAnimationLinkedHashMap = new LinkedHashMap<>();
+    SpriteAnimation spriteAnimation = new SpriteAnimation(explosionImageView, Duration.millis(500), count, colums, offsetX, offsetY, animationWidth, animationHeight) ;
 
 
     // доделать выбор колонки и строки независимо
@@ -129,7 +133,7 @@ public class Main extends Application {
         int ultraShittedHeight = mapa.length * Constants.TILE_SIZE;
 //        int ultraShittedHeight = zachemYaJivy(20);
         explosionImageView.setViewport(new Rectangle2D(offsetX, offsetY, animationWidth, animationHeight));
-        SpriteAnimation spriteAnimation = new SpriteAnimation(explosionImageView, Duration.millis(700), count, colums, offsetX, offsetY, animationWidth, animationHeight);
+        SpriteAnimation spriteAnimation = new SpriteAnimation(explosionImageView, Duration.millis(500), count, colums, offsetX, offsetY, animationWidth, animationHeight);
         spriteAnimation.setCycleCount(1);
 
 
@@ -208,17 +212,25 @@ public class Main extends Application {
         Image testMoving = new Image(new File("assets/terrain/blood_fountain.png").toURI().toString());
 
         //Creating the mouse event handler
-        EventHandler<MouseEvent> eventHandler = e -> {
-            log("Mouse Event handled");
-            //w112
-            //h148
-            explosionImageView.setX(e.getX()-animationWidth/2);
-            explosionImageView.setY(e.getY()-animationHeight+20);
-            spriteAnimation.play();
+        EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                log("Mouse Event handled");
+                //w112
+                //h148
+                //При таком раскладе я просто не смогу передвинуть бокс с анимацией вовремя, да создам новую анимацию но и бокс тогда нужно создавать по идее новый.
+                //spriteAnimationLinkedHashMap.put(animationCounter,new SpriteAnimation(explosionImageView, Duration.millis(500), count, colums, offsetX, offsetY, animationWidth, animationHeight));
+                explosionImageView.setX(e.getX()-animationWidth/2);
+                explosionImageView.setY(e.getY()-animationHeight+20);
+                spriteAnimation.play();
+                clearArea(layerService.getRegisteredGraphicContext(mainLayer),e.getX()-32,e.getY()-32,64,64);
 //            layerService.getRegisteredGraphicContext(newLayer).clearRect(i,0,32,32);
-            //drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer),testMoving,90,10,10);
-            //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
-            //i+=32;
+                //drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer),testMoving,90,10,10);
+                //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+                //i+=32;
+            }
+
+
         };
         //Registering the event filter
 
