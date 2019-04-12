@@ -2,9 +2,12 @@ package com.jsonRPGClientFX;
 
 import com.jsonRPGClientFX.entities.DecorationEntity;
 import com.jsonRPGClientFX.entities.DrawableEntity;
+import com.jsonRPGClientFX.entities.MapEntity;
 import com.jsonRPGClientFX.entities.TerrainEntity;
 import com.jsonRPGClientFX.services.LayerService;
+import com.jsonRPGClientFX.services.MapService;
 import com.jsonRPGClientFX.utils.Constants;
+import com.jsonRPGClientFX.utils.UtilsLogger;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
@@ -43,9 +46,11 @@ public class Main extends Application {
     
     private static ArrayList<File> files = new ArrayList<>();
     private LayerService layerService = new LayerService();
-    Random random = new Random();
-    // Map<String, Layer> map;
-    // MapEntity mapEntity = new MapEntity("testMapa",map);
+
+    private MapEntity mapEntity = new MapEntity();
+
+    private MapService mapService = new MapService();
+
 
 
     static {
@@ -53,13 +58,7 @@ public class Main extends Application {
         files.add(new File("assets/terrain/2473250_1.png"));
     }
 
-    //draw image rotate on 90 180 270 deg некоторые тайлы нужно поворачивать на разный угол (ровный)
-    // сделать масив флоат и через точку указывать угол поворота
-    // *.0 - * это ид картинки 0 это угол поворота , а значит читаем картинку как есть
-    // *.9 - * это ид картинки 9 это угол поворота , а значит читаем картинку и поварачиваем на 90 градусов при отрисовке.
-    // *.18 - * это ид картинки 18 это угол поворота , а значит читаем картинку и поварачиваем на 90 градусов при отрисовке
-    // *.27 - * это ид картинки 270 это угол поворота , а значит читаем картинку и поварачиваем на 90 градусов при отрисовке
-    // доступны будут только эти углы поворота и в случае если угол не равен вышеперечисленным отдаем эррор с координатами(длинна конкретного масива[0-х], длнна масива масивов) где в масиве ошибка
+
     private static int[][] mapa =
             {
                     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -83,29 +82,14 @@ public class Main extends Application {
 
             };
 
-    private static int[][] collisionMapa =
-            {
-                    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 
-
-            };
-
+    //draw image rotate on 90 180 270 deg некоторые тайлы нужно поворачивать на разный угол (ровный)
+    // сделать масив флоат и через точку указывать угол поворота
+    // *.0 - * это ид картинки 0 это угол поворота , а значит читаем картинку как есть
+    // *.9 - * это ид картинки 9 это угол поворота , а значит читаем картинку и поварачиваем на 90 градусов при отрисовке.
+    // *.18 - * это ид картинки 18 это угол поворота , а значит читаем картинку и поварачиваем на 90 градусов при отрисовке
+    // *.27 - * это ид картинки 270 это угол поворота , а значит читаем картинку и поварачиваем на 90 градусов при отрисовке
+    // доступны будут только эти углы поворота и в случае если угол не равен вышеперечисленным отдаем эррор с координатами(длинна конкретного масива[0-х], длнна масива масивов) где в масиве ошибка
     private void drawRotatedImage(GraphicsContext gc, Image image, double angle, double x, double y, double width, double height) {
         Rotate r = new Rotate(angle, x + image.getWidth() / 2, y + image.getHeight() / 2);
         gc.save(); // saves the current state on stack, including the current transform
@@ -127,6 +111,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        mapEntity.setMap(Constants.testMap);
+        mapService.addMapToList(mapEntity);
+
         Group root = new Group();
 
         int ultraShittedWidth = mapa[0].length * Constants.TILE_SIZE;
@@ -215,7 +202,7 @@ public class Main extends Application {
         EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent e) {
-                log("Mouse Event handled");
+                UtilsLogger.log("Mouse Event handled");
                 //w112
                 //h148
                 //При таком раскладе я просто не смогу передвинуть бокс с анимацией вовремя, да создам новую анимацию но и бокс тогда нужно создавать по идее новый.
@@ -236,30 +223,30 @@ public class Main extends Application {
 
 
         EventHandler<KeyEvent> keyEventEventHandler = e -> {
-            log("Key pressed " + e.getCode());
+            UtilsLogger.log("Key pressed " + e.getCode());
             clearArea(layerService.getRegisteredGraphicContext(newLayer), i, j, 32, 32);
             switch (e.getCode().toString()) {
                 case "W":
-                    log("W");
+                    UtilsLogger.log("W");
                     j -= velociped;
                     drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 0, i, j, 32, 32);
                     //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
 
                     break;
                 case "A":
-                    log("A");
+                    UtilsLogger.log("A");
                     i -= velociped;
                     drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 270, i, j, 32, 32);
                     //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
                     break;
                 case "S":
-                    log("S");
+                    UtilsLogger.log("S");
                     j += velociped;
                     drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 180, i, j, 32, 32);
                     //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
                     break;
                 case "D":
-                    log("D");
+                    UtilsLogger.log("D");
                     i += velociped;
                     drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 90, i, j, 32, 32);
                     //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving, i,j,32,32);
@@ -286,10 +273,6 @@ public class Main extends Application {
         gc.clearRect(x, y, width, height);
     }
 
-    private void log(String str) {
-        System.out.println("[LOG-INFO]: " + str);
-    }
-
     public void mapRender(GraphicsContext gc, DrawableEntity[][] drawableEntities) {
         for (int y = 0; y < drawableEntities.length; y++) {
 //            int yC = suparPiecOfShittConstant * y;
@@ -308,6 +291,8 @@ public class Main extends Application {
     //нужно вынести группу в лист в отдельном класе (но в группе и так все узлы в листе)
     //нужно хранить анимации в отдельном листе (но лучше привязывать к отдельным обьектам)(подумать о фабрике обьектов)(сложные обьекты с анимацией через нее , а не сложные тайлы отдельно
     // или все через нее хз)
+    //Последовательная загрузка изображений в память ... как оптимизация
+    // коллизия: радиус попарных точек (есть вероятность что их прийдется строить дохера и столько же считать)
 
 
 
