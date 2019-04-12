@@ -1,18 +1,9 @@
 package com.jsonRPGClientFX.services;
 
-import com.jsonRPGClientFX.entities.MapEntity;
+import com.jsonRPGClientFX.entities.mapEntities.MapEntity;
 import com.jsonRPGClientFX.utils.UtilsLogger;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.RasterFormatException;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.IntStream;
 
 public class MapService {
     private Integer mapsInLisCounter = 0;//это щит и нужно сделать как то не так

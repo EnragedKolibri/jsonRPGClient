@@ -2,7 +2,7 @@ package com.jsonRPGClientFX;
 
 import com.jsonRPGClientFX.entities.DecorationEntity;
 import com.jsonRPGClientFX.entities.DrawableEntity;
-import com.jsonRPGClientFX.entities.MapEntity;
+import com.jsonRPGClientFX.entities.mapEntities.MapEntity;
 import com.jsonRPGClientFX.entities.TerrainEntity;
 import com.jsonRPGClientFX.services.LayerService;
 import com.jsonRPGClientFX.services.MapService;
@@ -26,7 +26,6 @@ import javafx.util.Duration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Random;
 
 public class Main extends Application {
     Image boom = new Image(new File("assets/QMqbQ.png").toURI().toString());
@@ -45,6 +44,8 @@ public class Main extends Application {
     // доделать выбор колонки и строки независимо
     
     private static ArrayList<File> files = new ArrayList<>();
+
+    //for each layer in map create layer through layer service and add
     private LayerService layerService = new LayerService();
 
     private MapEntity mapEntity = new MapEntity();
@@ -58,29 +59,6 @@ public class Main extends Application {
         files.add(new File("assets/terrain/2473250_1.png"));
     }
 
-
-    private static int[][] mapa =
-            {
-                    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-
-
-            };
 
 
     //draw image rotate on 90 180 270 deg некоторые тайлы нужно поворачивать на разный угол (ровный)
@@ -111,13 +89,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        mapEntity.setMap(Constants.testMap);
         mapService.addMapToList(mapEntity);
 
         Group root = new Group();
 
-        int ultraShittedWidth = mapa[0].length * Constants.TILE_SIZE;
-        int ultraShittedHeight = mapa.length * Constants.TILE_SIZE;
+        int ultraShittedWidth = Constants.testMap[0].length * Constants.TILE_SIZE;
+        int ultraShittedHeight = Constants.testMap.length * Constants.TILE_SIZE;
 //        int ultraShittedHeight = zachemYaJivy(20);
         explosionImageView.setViewport(new Rectangle2D(offsetX, offsetY, animationWidth, animationHeight));
         SpriteAnimation spriteAnimation = new SpriteAnimation(explosionImageView, Duration.millis(500), count, colums, offsetX, offsetY, animationWidth, animationHeight);
@@ -144,12 +121,12 @@ public class Main extends Application {
         TerrainEntity.TerrainType voidType = TerrainEntity.TerrainType.VOID;
 
 
-        drawableEntities = new DrawableEntity[mapa[0].length][mapa.length];
-        for (int y = 0; y < mapa.length; y++) {
-            for (int x = 0; x < mapa[0].length; x++) {
+        drawableEntities = new DrawableEntity[Constants.testMap[0].length][Constants.testMap.length];
+        for (int y = 0; y < Constants.testMap.length; y++) {
+            for (int x = 0; x < Constants.testMap[0].length; x++) {
                 double yC = Constants.TILE_SIZE * y;
                 double xC = Constants.TILE_SIZE * x;
-                switch (mapa[y][x]) {
+                switch (Constants.testMap[y][x]) {
                     case 0: {
                         TerrainEntity terrainEntity = new TerrainEntity("name" + y + x, voidType, xC, yC);
                         terrainEntity.setFile(files.get(0));
