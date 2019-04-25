@@ -19,4 +19,8 @@ public class DecorationEntity extends DrawableEntity {
         super.setImage(image);
     }
 
+    @Override
+    public void render() {
+
+    }
 }

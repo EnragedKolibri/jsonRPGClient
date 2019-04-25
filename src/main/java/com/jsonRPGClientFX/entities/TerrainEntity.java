@@ -6,6 +6,11 @@ import java.io.File;
 
 public class TerrainEntity extends DrawableEntity {
 
+    @Override
+    public void render() {
+
+    }
+
     public enum TerrainType{
         VOID, GROUND;
 
@@ -13,7 +18,7 @@ public class TerrainEntity extends DrawableEntity {
 
     private TerrainType terrainType;
 
-    public TerrainEntity(String name, TerrainType terrainType ,Double x, Double y) {
+    public TerrainEntity(String name ,Double x, Double y) {
 
         super(Type.TERRAIN, name, x, y);
         this.terrainType = terrainType;

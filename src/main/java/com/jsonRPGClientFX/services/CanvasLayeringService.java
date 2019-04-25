@@ -5,7 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 import java.util.*;
 
-public class LayerService {
+public class CanvasLayeringService {
 
     private Map<String, Canvas> canvasMap = new LinkedHashMap<>();
 

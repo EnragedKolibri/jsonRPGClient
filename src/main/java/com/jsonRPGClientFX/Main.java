@@ -2,9 +2,10 @@ package com.jsonRPGClientFX;
 
 import com.jsonRPGClientFX.entities.DecorationEntity;
 import com.jsonRPGClientFX.entities.DrawableEntity;
-import com.jsonRPGClientFX.entities.mapEntities.MapEntity;
+import com.jsonRPGClientFX.entities.mapEntities.Map;
 import com.jsonRPGClientFX.entities.TerrainEntity;
-import com.jsonRPGClientFX.services.LayerService;
+import com.jsonRPGClientFX.entities.mapEntities.MapLayer;
+import com.jsonRPGClientFX.services.CanvasLayeringService;
 import com.jsonRPGClientFX.services.MapService;
 import com.jsonRPGClientFX.utils.Constants;
 import com.jsonRPGClientFX.utils.UtilsLogger;
@@ -25,50 +26,20 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
 
 public class Main extends Application {
-    Image boom = new Image(new File("assets/QMqbQ.png").toURI().toString());
-    int count = 7;
-    int colums = 6;
-    int offsetX = 0;
-    int offsetY = 0;
-    int animationWidth = 112;
-    int animationHeight = 148;
-    int animationCounter=0;
-    ImageView explosionImageView = new ImageView(boom);
-    LinkedHashMap<Integer,SpriteAnimation> spriteAnimationLinkedHashMap = new LinkedHashMap<>();
-    SpriteAnimation spriteAnimation = new SpriteAnimation(explosionImageView, Duration.millis(500), count, colums, offsetX, offsetY, animationWidth, animationHeight) ;
 
+    private Image boom = new Image(new File("assets/QMqbQ.png").toURI().toString());
+    private Group root;
 
-    // доделать выбор колонки и строки независимо
-    
     private static ArrayList<File> files = new ArrayList<>();
-
-    //for each layer in map create layer through layer service and add
-    private LayerService layerService = new LayerService();
-
-    private MapEntity mapEntity = new MapEntity();
-
-    private MapService mapService = new MapService();
-
-
-
     static {
         files.add(new File("assets/terrain/1470105_3.png"));
         files.add(new File("assets/terrain/2473250_1.png"));
     }
 
-
-
-    //draw image rotate on 90 180 270 deg некоторые тайлы нужно поворачивать на разный угол (ровный)
-    // сделать масив флоат и через точку указывать угол поворота
-    // *.0 - * это ид картинки 0 это угол поворота , а значит читаем картинку как есть
-    // *.9 - * это ид картинки 9 это угол поворота , а значит читаем картинку и поварачиваем на 90 градусов при отрисовке.
-    // *.18 - * это ид картинки 18 это угол поворота , а значит читаем картинку и поварачиваем на 90 градусов при отрисовке
-    // *.27 - * это ид картинки 270 это угол поворота , а значит читаем картинку и поварачиваем на 90 градусов при отрисовке
-    // доступны будут только эти углы поворота и в случае если угол не равен вышеперечисленным отдаем эррор с координатами(длинна конкретного масива[0-х], длнна масива масивов) где в масиве ошибка
-    private void drawRotatedImage(GraphicsContext gc, Image image, double angle, double x, double y, double width, double height) {
+    private void drawImage(GraphicsContext gc, Image image, double angle, double x, double y, double width, double height) {
         Rotate r = new Rotate(angle, x + image.getWidth() / 2, y + image.getHeight() / 2);
         gc.save(); // saves the current state on stack, including the current transform
         gc.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
@@ -77,7 +48,7 @@ public class Main extends Application {
     }
 
 
-    private static DrawableEntity[][] drawableEntities;
+
 
     private int i = 0;
     private int j = 0;
@@ -89,46 +60,45 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        mapService.addMapToList(mapEntity);
-
-        Group root = new Group();
-
-        int ultraShittedWidth = Constants.testMap[0].length * Constants.TILE_SIZE;
-        int ultraShittedHeight = Constants.testMap.length * Constants.TILE_SIZE;
-//        int ultraShittedHeight = zachemYaJivy(20);
-        explosionImageView.setViewport(new Rectangle2D(offsetX, offsetY, animationWidth, animationHeight));
-        SpriteAnimation spriteAnimation = new SpriteAnimation(explosionImageView, Duration.millis(500), count, colums, offsetX, offsetY, animationWidth, animationHeight);
-        spriteAnimation.setCycleCount(1);
-
-
-
-        //root.setPrefSize(ultraShittedWidth, ultraShittedHeight);
-
-        Scene s = new Scene(root, ultraShittedWidth, ultraShittedHeight, Color.BLACK);
 
         String mainLayer = "mainLayer";
-        String testLayer = "testLayer";
         String newLayer = "newLayer";
-        layerService.registerNewGraphicContext(mainLayer, ultraShittedWidth, ultraShittedHeight);
-        layerService.registerNewGraphicContext(newLayer, ultraShittedWidth, ultraShittedHeight);
-        layerService.registerNewGraphicContext(testLayer, 200, 200);
 
-        layerService.getAllRegisteredCanvas().forEach(canvas -> root.getChildren().add(canvas));
-        root.getChildren().add(explosionImageView);
-        explosionImageView.setX(100);
+        int width = Constants.testMap[0].length * Constants.TILE_SIZE; //Нужно пересчитывать
+        int height = Constants.testMap.length * Constants.TILE_SIZE;  //
+        root = new Group();
+        Scene scene = new Scene(root, width, height, Color.BLACK);
+        //for each layer in testMap create layer through layer service and add
+        CanvasLayeringService canvasLayeringService = new CanvasLayeringService();
 
-        //TerrainEntity.TerrainType groundType = TerrainEntity.TerrainType.GROUND;
-        TerrainEntity.TerrainType voidType = TerrainEntity.TerrainType.VOID;
+        MapLayer woodLayer = new MapLayer(Constants.woodLayer);
+        Map map = new Map();
+        MapService mapService = new MapService();
+
+        woodLayer.setDebugMode(true);
+        map.addLayer("mainLayer",woodLayer);
+        mapService.addMapToList(map);
+        mapService.getMap(1).getRegisteredLayerNames().forEach(s -> canvasLayeringService.registerNewGraphicContext(s,width,height));
+
+        canvasLayeringService.registerNewGraphicContext(newLayer, width, height);
+        canvasLayeringService.getAllRegisteredCanvas().forEach(canvas -> root.getChildren().add(canvas));
+
+        //Решить вопрос с просисовкой карты и автоматическим взаимодействием сервисов
+        //Решить вопрос с ЖСОНОМ посмотреть как выглядят мои обьекты сейчас
+        //
 
 
-        drawableEntities = new DrawableEntity[Constants.testMap[0].length][Constants.testMap.length];
-        for (int y = 0; y < Constants.testMap.length; y++) {
-            for (int x = 0; x < Constants.testMap[0].length; x++) {
+        int[][] testMap = mapService.getMap(1).getLayer(mainLayer).getLayerMatrix();
+
+        UtilsLogger.log("testMap" + Arrays.deepToString(testMap));
+       DrawableEntity[][] drawableEntities = new DrawableEntity[testMap[0].length][testMap.length];
+        for (int y = 0; y < testMap.length; y++) {
                 double yC = Constants.TILE_SIZE * y;
+            for (int x = 0; x < testMap[0].length; x++) {
                 double xC = Constants.TILE_SIZE * x;
-                switch (Constants.testMap[y][x]) {
+                switch (testMap[y][x]) {
                     case 0: {
-                        TerrainEntity terrainEntity = new TerrainEntity("name" + y + x, voidType, xC, yC);
+                        TerrainEntity terrainEntity = new TerrainEntity("name" + y + x, xC, yC);
                         terrainEntity.setFile(files.get(0));
                         drawableEntities[x][y] = terrainEntity;
                         break;
@@ -147,102 +117,72 @@ public class Main extends Application {
             }
         }
 
-
-        //Layer filler algorithm proto
-//        int x = 0;
-//        int y = 0;
-//        for (int i = 0; i != ultraShittedWidth; i++) {
-//            if (x == ultraShittedWidth) {
-//                y+=suparPiecOfShittConstant;
-//                x=0;
-//            }
-//            gc.drawImage(imageProcessor(files), x , y,suparPiecOfShittConstant,suparPiecOfShittConstant);
-//            x+=suparPiecOfShittConstant;
-//        }
-
-//        for (int y = 0; y <  mapa.length; y++) {
-//            int yC = suparPiecOfShittConstant * y;
-//
-//            System.out.println("y " + yC);
-//            for (int x = 0; x < mapa[0].length ; x ++) {
-//                int xC = suparPiecOfShittConstant * x;
-//
-//                mainLayerGraphicCtx.drawImage(imageProcessor(mapa[y][x]), xC , yC,suparPiecOfShittConstant,suparPiecOfShittConstant);
-//            }
-//        }
-
-
-        mapRender(layerService.getRegisteredGraphicContext(mainLayer), drawableEntities);
-        Image testMoving = new Image(new File("assets/terrain/blood_fountain.png").toURI().toString());
+        mapRender(canvasLayeringService.getRegisteredGraphicContext(mainLayer), drawableEntities);
 
         //Creating the mouse event handler
-        EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                UtilsLogger.log("Mouse Event handled");
-                //w112
-                //h148
-                //При таком раскладе я просто не смогу передвинуть бокс с анимацией вовремя, да создам новую анимацию но и бокс тогда нужно создавать по идее новый.
-                //spriteAnimationLinkedHashMap.put(animationCounter,new SpriteAnimation(explosionImageView, Duration.millis(500), count, colums, offsetX, offsetY, animationWidth, animationHeight));
-                explosionImageView.setX(e.getX()-animationWidth/2);
-                explosionImageView.setY(e.getY()-animationHeight+20);
-                spriteAnimation.play();
-                clearArea(layerService.getRegisteredGraphicContext(mainLayer),e.getX()-32,e.getY()-32,64,64);
-//            layerService.getRegisteredGraphicContext(newLayer).clearRect(i,0,32,32);
-                //drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer),testMoving,90,10,10);
-                //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
-                //i+=32;
-            }
-
-
+        EventHandler<MouseEvent> eventHandler = e -> {
+            float animationWidth = 112;
+            float animationHeight = 148;
+            ImageView explosionImageView = new ImageView(boom);
+            explosionImageView.setViewport(new Rectangle2D(0, 0, 112, 148));
+            SpriteAnimation spriteAnimation = new SpriteAnimation(explosionImageView, Duration.millis(500), 6, 6, 0, 0, 112, 148) ;
+            spriteAnimation.setCycleCount(1);
+            root.getChildren().add(explosionImageView);
+            explosionImageView.setX(e.getX()-112/2);
+            explosionImageView.setY(e.getY()-148+20);
+            spriteAnimation.play();
+            spriteAnimation.setOnFinished(t -> root.getChildren().remove(explosionImageView));
+            UtilsLogger.log(root.getChildren().toString());
         };
+
         //Registering the event filter
-
-
+        //добавить слежение за мышью
+        Image testMoving = new Image(new File("assets/terrain/blood_fountain.png").toURI().toString());
         EventHandler<KeyEvent> keyEventEventHandler = e -> {
             UtilsLogger.log("Key pressed " + e.getCode());
-            clearArea(layerService.getRegisteredGraphicContext(newLayer), i, j, 32, 32);
+            clearArea(canvasLayeringService.getRegisteredGraphicContext(newLayer), i, j, 32, 32);
             switch (e.getCode().toString()) {
                 case "W":
                     UtilsLogger.log("W");
                     j -= velociped;
-                    drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 0, i, j, 32, 32);
-                    //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+                    drawImage(canvasLayeringService.getRegisteredGraphicContext(newLayer), testMoving, 0, i, j, 32, 32);
+                    //canvasLayeringService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
 
                     break;
                 case "A":
                     UtilsLogger.log("A");
                     i -= velociped;
-                    drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 270, i, j, 32, 32);
-                    //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+                    drawImage(canvasLayeringService.getRegisteredGraphicContext(newLayer), testMoving, 270, i, j, 32, 32);
+                    //canvasLayeringService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
                     break;
                 case "S":
                     UtilsLogger.log("S");
                     j += velociped;
-                    drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 180, i, j, 32, 32);
-                    //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
+                    drawImage(canvasLayeringService.getRegisteredGraphicContext(newLayer), testMoving, 180, i, j, 32, 32);
+                    //canvasLayeringService.getRegisteredGraphicContext(newLayer).drawImage(testMoving,i,j,32,32);
                     break;
                 case "D":
                     UtilsLogger.log("D");
                     i += velociped;
-                    drawRotatedImage(layerService.getRegisteredGraphicContext(newLayer), testMoving, 90, i, j, 32, 32);
-                    //layerService.getRegisteredGraphicContext(newLayer).drawImage(testMoving, i,j,32,32);
+                    drawImage(canvasLayeringService.getRegisteredGraphicContext(newLayer), testMoving, 90, i, j, 32, 32);
+                    //canvasLayeringService.getRegisteredGraphicContext(newLayer).drawImage(testMoving, i,j,32,32);
                     break;
             }
 
         };
 
-        s.addEventHandler(KeyEvent.KEY_PRESSED, keyEventEventHandler);
-        s.addEventHandler(MouseEvent.MOUSE_CLICKED,eventHandler);
-        layerService.getRegisteredCanvas(testLayer).addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
-
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, keyEventEventHandler);
+        scene.addEventHandler(MouseEvent.MOUSE_CLICKED,eventHandler);
 
         stage.setTitle("Vision");
-        stage.setScene(s);
-        stage.setHeight(200);
-        stage.setWidth(200);
-        //stage.setResizable(false);
+        stage.setScene(scene);
+        stage.setHeight(1000);
+        stage.setWidth(1000);
         stage.show();
+
+        UtilsLogger.log(root.getClass().getName()+root.getChildren().toString());
+
+
     }
     //Game files processor proto
 
@@ -250,7 +190,7 @@ public class Main extends Application {
         gc.clearRect(x, y, width, height);
     }
 
-    public void mapRender(GraphicsContext gc, DrawableEntity[][] drawableEntities) {
+    private void mapRender(GraphicsContext gc, DrawableEntity[][] drawableEntities) {
         for (int y = 0; y < drawableEntities.length; y++) {
 //            int yC = suparPiecOfShittConstant * y;
 
@@ -259,10 +199,11 @@ public class Main extends Application {
 //                int xC = suparPiecOfShittConstant * x;
 
                 DrawableEntity drawableEntity = drawableEntities[y][x];
-                gc.drawImage(drawableEntity.getImage(), drawableEntity.getX(), drawableEntity.getY(), Constants.TILE_SIZE, Constants.TILE_SIZE);
+                drawImage(gc,drawableEntity.getImage(),0,drawableEntity.getX(),drawableEntity.getY(),Constants.TILE_SIZE,Constants.TILE_SIZE);
             }
         }
     }
+
 
     //не забывать что анимация играет в image view который нужно добавлять в рут(группу для отображения в окне) а она пока существует только в методе окна
     //нужно вынести группу в лист в отдельном класе (но в группе и так все узлы в листе)

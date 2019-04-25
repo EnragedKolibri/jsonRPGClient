@@ -1,10 +1,11 @@
 package com.jsonRPGClientFX.entities;
 
+import com.jsonRPGClientFX.components.IRenderable;
 import javafx.scene.image.Image;
 
 import java.io.File;
 
-public abstract class DrawableEntity {
+public abstract class DrawableEntity implements IRenderable {
 
     public enum Type {
         TERRAIN, PLAYER, ITEM
@@ -45,6 +46,11 @@ public abstract class DrawableEntity {
 
     public Double getY() {
         return y;
+    }
+
+    public void renderIfInFrame(Double x, Double y) {
+        if (this.x > x && this.y > y) return;
+        this.render();
     }
 
 }

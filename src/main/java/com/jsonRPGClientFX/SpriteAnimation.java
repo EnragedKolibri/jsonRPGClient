@@ -28,6 +28,7 @@ public class SpriteAnimation extends Transition {
 
     }
 
+    // доделать выбор колонки и строки независимо
     @Override
     protected void interpolate(double frac) {
         final int index = Math.min((int) Math.floor(frac*count),count-1);

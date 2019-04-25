@@ -1,10 +1,21 @@
 {
   "title":"my_first_little_map",
+  "renders": [
+    {
+      "id": "hero4567",
+      "data_id": 0,
+      "image": "/img/image1.jpg",
+      "rotation": -90
+    }
+  ],
   "layers":{
       "layer1":{
         "dictionary":{
-        "0": "1470105_3.png",
-        "1": "2473250_1.png"
+
+        "0":{
+          "image":"1470105_3.png",
+          "rotation": ""
+        }
       },
         "data":[
 
