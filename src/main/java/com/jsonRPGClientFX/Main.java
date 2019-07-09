@@ -9,6 +9,7 @@ import com.jsonRPGClientFX.services.CanvasLayeringService;
 import com.jsonRPGClientFX.services.MapService;
 import com.jsonRPGClientFX.utils.Constants;
 import com.jsonRPGClientFX.utils.UtilsLogger;
+import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
@@ -23,10 +24,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Scanner;
 
 public class Main extends Application {
 
@@ -60,6 +60,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        Scanner in = new Scanner(System.in);
+
+
 
         String mainLayer = "mainLayer";
         String newLayer = "newLayer";
@@ -68,6 +71,7 @@ public class Main extends Application {
         int height = Constants.testMap.length * Constants.TILE_SIZE;  //
         root = new Group();
         Scene scene = new Scene(root, width, height, Color.BLACK);
+
         //for each layer in testMap create layer through layer service and add
         CanvasLayeringService canvasLayeringService = new CanvasLayeringService();
 
@@ -85,12 +89,10 @@ public class Main extends Application {
 
         //Решить вопрос с просисовкой карты и автоматическим взаимодействием сервисов
         //Решить вопрос с ЖСОНОМ посмотреть как выглядят мои обьекты сейчас
-        //
 
 
         int[][] testMap = mapService.getMap(1).getLayer(mainLayer).getLayerMatrix();
 
-        UtilsLogger.log("testMap" + Arrays.deepToString(testMap));
        DrawableEntity[][] drawableEntities = new DrawableEntity[testMap[0].length][testMap.length];
         for (int y = 0; y < testMap.length; y++) {
                 double yC = Constants.TILE_SIZE * y;
@@ -121,17 +123,16 @@ public class Main extends Application {
 
         //Creating the mouse event handler
         EventHandler<MouseEvent> eventHandler = e -> {
-            float animationWidth = 112;
-            float animationHeight = 148;
-            ImageView explosionImageView = new ImageView(boom);
-            explosionImageView.setViewport(new Rectangle2D(0, 0, 112, 148));
-            SpriteAnimation spriteAnimation = new SpriteAnimation(explosionImageView, Duration.millis(500), 6, 6, 0, 0, 112, 148) ;
-            spriteAnimation.setCycleCount(1);
-            root.getChildren().add(explosionImageView);
-            explosionImageView.setX(e.getX()-112/2);
-            explosionImageView.setY(e.getY()-148+20);
-            spriteAnimation.play();
-            spriteAnimation.setOnFinished(t -> root.getChildren().remove(explosionImageView));
+            Image boom = new Image(new File("assets/george.png").toURI().toString());
+            SpriteAnimation animation = new SpriteAnimation(boom, Duration.millis(2800), 6, 4, 0, 0, 48, 48, 1) ;
+            root.getChildren().add(animation.getImageView());
+            //animation.getImageView().setX(e.getX()-112/2);
+            //animation.getImageView().setY(e.getY()-148+20);
+            animation.getImageView().setX(e.getX());
+            animation.getImageView().setY(e.getY());
+            animation.play();
+            animation.play();
+            animation.setOnFinished(t -> root.getChildren().remove(animation.getImageView()));
             UtilsLogger.log(root.getChildren().toString());
         };
 
@@ -176,8 +177,8 @@ public class Main extends Application {
 
         stage.setTitle("Vision");
         stage.setScene(scene);
-        stage.setHeight(1000);
-        stage.setWidth(1000);
+        stage.setHeight(height);
+        stage.setWidth(width);
         stage.show();
 
         UtilsLogger.log(root.getClass().getName()+root.getChildren().toString());
